@@ -544,6 +544,7 @@
     <script>
         // Enhanced data structure
         let financialData = {
+            nextId: 1, // Initialize nextId
             bankBalance: 0,
             creditCards: [],
             purchases: [],
@@ -582,6 +583,22 @@
                     ...item,
                     date: new Date(item.date)
                 }));
+
+                // Recover nextId more robustly
+                let maxId = 0;
+                const allItems = [
+                    ...(parsedData.monthlyIncome || []),
+                    ...(parsedData.monthlyExpenses || []),
+                    ...(parsedData.creditCards || []),
+                    ...(parsedData.purchases || [])
+                ];
+                allItems.forEach(item => {
+                    // Ensure item.id is a number before comparing
+                    if (item && typeof item.id === 'number' && item.id > maxId) {
+                        maxId = item.id;
+                    }
+                });
+                financialData.nextId = parsedData.nextId || (maxId + 1) || 1;
             }
         }
 
@@ -651,11 +668,14 @@
             }
 
             financialData.monthlyIncome.push({
-                id: Date.now(),
+                id: financialData.nextId++,
                 description,
                 amount,
                 date
-            });
+            };
+            financialData.monthlyExpenses.push(newExpense);
+            console.log('[addExpense] After:', JSON.parse(JSON.stringify(financialData.monthlyExpenses)));
+            console.log('[addExpense] Added item ID:', newExpense.id);
 
             descInput.value = '';
             amountInput.value = '';
@@ -685,8 +705,8 @@
                 return;
             }
 
-            financialData.monthlyExpenses.push({
-                id: Date.now(),
+            const newExpense = {
+                id: financialData.nextId++,
                 description,
                 amount,
                 date
@@ -723,7 +743,7 @@
             }
 
             financialData.creditCards.push({
-                id: Date.now(),
+                id: financialData.nextId++,
                 name,
                 statementCloseDate,
                 paymentDueDate
@@ -761,7 +781,7 @@
             }
 
             financialData.purchases.push({
-                id: Date.now(),
+                id: financialData.nextId++,
                 description,
                 amount,
                 cardId,
@@ -862,7 +882,9 @@
             const listElement = document.getElementById(listId);
             listElement.innerHTML = ''; // Clear existing items
 
-            items.filter(filterFn).forEach(item => {
+            const filteredItems = items.filter(filterFn);
+
+            filteredItems.forEach(item => {
                 const div = document.createElement('div');
                 div.classList.add('item');
                 if (type === 'income') div.classList.add('income');
