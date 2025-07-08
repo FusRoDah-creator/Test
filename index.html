@@ -673,15 +673,12 @@
                 amount,
                 date
             };
-            financialData.monthlyExpenses.push(newExpense);
-            console.log('[addExpense] After:', JSON.parse(JSON.stringify(financialData.monthlyExpenses)));
-            console.log('[addExpense] Added item ID:', newExpense.id);
 
             descInput.value = '';
             amountInput.value = '';
             dateInput.valueAsDate = new Date();
             updateDisplay();
-            saveData(); // Save after adding income
+            saveData();
         }
 
         function deleteIncome(id) {
@@ -710,13 +707,14 @@
                 description,
                 amount,
                 date
-            });
+            };
+            financialData.monthlyExpenses.push(newExpense); // Ensure this line is present
 
             descInput.value = '';
             amountInput.value = '';
-            dateInput.valueAsDate = new Date();
-            updateDisplay();
-            saveData(); // Save after adding expense
+            dateInput.valueAsDate = new Date(); // Restore this line
+            updateDisplay(); // Restore this line
+            saveData(); // Restore this line
         }
 
         function deleteExpense(id) {
@@ -753,7 +751,7 @@
             closeDateInput.value = '';
             dueDateInput.value = '';
             updateDisplay();
-            saveData(); // Save after adding credit card
+            saveData();
         }
 
         function deleteCreditCard(id) {
@@ -793,7 +791,7 @@
             cardSelect.value = '';
             dateInput.valueAsDate = new Date();
             updateDisplay();
-            saveData(); // Save after adding purchase
+            saveData();
         }
 
         function deletePurchase(id) {
